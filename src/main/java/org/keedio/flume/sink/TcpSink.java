@@ -53,7 +53,7 @@ public class TcpSink extends AbstractSink implements Configurable{
 		Preconditions.checkState(serverPort != null, "No serverPort specified");
 
 		connectionRetries = context.getInteger("connectionRetries",0);
-		connectionTimeout = context.getInteger("connectionTimeout",10);
+		connectionTimeout = context.getInteger("connectionTimeout",10000);
 		connectionRetryDelay = context.getInteger("connectionRetryDelay",10);
 		batchSize = context.getInteger("batchSize",100);
 		currentRetries = 0;
@@ -131,6 +131,8 @@ public class TcpSink extends AbstractSink implements Configurable{
 				}
 				
 				sinkCounter.addToEventDrainAttemptCount(batchToSendSize);
+				String len = String.format("%08d", batch.length);
+				socket.getOutputStream().write(len.getBytes());
 				socket.getOutputStream().write(batch);	
 			}
 
